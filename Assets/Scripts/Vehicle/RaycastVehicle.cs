@@ -8,6 +8,8 @@ using UnityEngine.Serialization;
 public class RaycastVehicle : MonoBehaviour
 {
     [SerializeField] private Rigidbody rigidBody;
+    [SerializeField] private GameObject[] _wheels = new GameObject[4];
+    [SerializeField] private GameObject[] _frontWheelsParents = new GameObject[1];
     [Header("Debug")] [SerializeField] private float _debugImpulseForce = 10;
 
     [Header("Suspension")] [SerializeField]
@@ -25,8 +27,9 @@ public class RaycastVehicle : MonoBehaviour
     [Header("Input")] [SerializeField] private float moveInput;
     [SerializeField] private float steerInput;
 
-    [Header("Vehicle Settings")] 
-    [SerializeField] private float _acceleration = 25f;
+    [Header("Vehicle Settings")] [SerializeField]
+    private float _acceleration = 25f;
+
     [SerializeField] private float _maxSpeed = 100f;
     [SerializeField] private float _deceleration = 10f;
     [SerializeField] private float _steerStrength = 15f;
@@ -35,6 +38,19 @@ public class RaycastVehicle : MonoBehaviour
 
     private Vector3 _currentVehicleLocalVelocity = Vector3.zero;
     private float _vehicleVelocityRatio = 0f;
+
+    [FormerlySerializedAs("wheelRotationSpeed")]
+    [Header("Visuals")] 
+    [SerializeField] private float _wheelRotationSpeed = 3000f;
+    [SerializeField] private float _maxSteeringAngle = 30f;
+
+    private void Start()
+    {
+        for (int i = 0; i < _wheels.Length; i++)
+        {
+            suspensionPoints[i].position = _wheels[i].transform.position;
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -53,6 +69,8 @@ public class RaycastVehicle : MonoBehaviour
         GroundCheck();
         CalculateVehicleVelocity();
         Movement();
+
+        UpdateVisuals();
     }
 
     private void GetPlayerInput()
@@ -80,13 +98,19 @@ public class RaycastVehicle : MonoBehaviour
                 float springForce = springCompression * _suspensionStiffness;
                 float totalForce = springForce - dampForce;
 
-                rigidBody.AddForceAtPosition(suspensionPoints[i].up * totalForce,
+                Vector3 forceToApply = suspensionPoints[i].up * totalForce;
+                rigidBody.AddForceAtPosition(forceToApply,
                     suspensionPoints[i].position);
-
+    
+                UpdateWheelPosition(_wheels[i], hit.point + suspensionPoints[i].up * _wheelRadius);
+                
+                Debug.DrawLine(suspensionPoints[i].position, suspensionPoints[i].position + forceToApply, Color.yellow);
                 Debug.DrawLine(suspensionPoints[i].position, hit.point, Color.red);
             }
             else
             {
+                UpdateWheelPosition(_wheels[i], suspensionPoints[i].position - suspensionPoints[i].up * maxLength);
+                
                 Debug.DrawLine(suspensionPoints[i].position,
                     suspensionPoints[i].position + (_wheelRadius + maxLength) * -suspensionPoints[i].up, Color.green);
             }
@@ -127,7 +151,7 @@ public class RaycastVehicle : MonoBehaviour
     private void Acceleration()
     {
         if (_currentVehicleLocalVelocity.z < _maxSpeed)
-        { 
+        {
             rigidBody.AddForce(moveInput * _acceleration * transform.forward, ForceMode.Acceleration);
         }
     }
@@ -147,10 +171,38 @@ public class RaycastVehicle : MonoBehaviour
     private void SidewaysDrag()
     {
         float currentSidewaysSpeed = _currentVehicleLocalVelocity.x;
-        
+
         float dragMagnitude = _dragCoefficient * -currentSidewaysSpeed;
         Vector3 dragForce = transform.right * dragMagnitude;
-        
+
         rigidBody.AddForceAtPosition(dragForce, rigidBody.worldCenterOfMass, ForceMode.Acceleration);
+    }
+
+    private void UpdateVisuals()
+    {
+        UpdateWheelVisuals();
+    }
+    
+    private void UpdateWheelVisuals()
+    {
+        float steeringAngle = _maxSteeringAngle * steerInput;
+        for (int i = 0; i < _wheels.Length; i++)
+        {
+            if (i< 2)
+            {
+                _wheels[i].transform.Rotate(Vector3.right, _wheelRotationSpeed * _vehicleVelocityRatio * Time.deltaTime, Space.Self);
+                var wheelRotation = _frontWheelsParents[i].transform.localEulerAngles;
+                _frontWheelsParents[i].transform.localEulerAngles = new Vector3(wheelRotation.x, steeringAngle, wheelRotation.z);
+            }
+            else
+            {
+                _wheels[i].transform.Rotate(Vector3.right, _wheelRotationSpeed * moveInput * Time.deltaTime, Space.Self);
+            }
+        }
+    }
+    
+    private void UpdateWheelPosition(GameObject wheel, Vector3 targetPosition)
+    {
+        wheel.transform.position = targetPosition;
     }
 }
