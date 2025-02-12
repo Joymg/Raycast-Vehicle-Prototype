@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d849ea3f100d92b418e7871501d6cd28, type: 3}
+  m_Name: RoadDatabase
+  m_EditorClassIdentifier: 
+  roadData:
+  - <Name>k__BackingField: Straight
+    <ID>k__BackingField: 0
+    <Size>k__BackingField: {x: 2, y: 2}
+    <Prefab>k__BackingField: {fileID: 9217661438655722051, guid: d6e3f5bc43010ef4c9d377a7a861c01b, type: 3}
+  - <Name>k__BackingField: TurnLarge
+    <ID>k__BackingField: 1
+    <Size>k__BackingField: {x: 3, y: 3}
+    <Prefab>k__BackingField: {fileID: 4079176819042868639, guid: 0b547550e713b2041a5d2f858221e6d0, type: 3}
+  - <Name>k__BackingField: Straight
+    <ID>k__BackingField: 2
+    <Size>k__BackingField: {x: 4, y: 4}
+    <Prefab>k__BackingField: {fileID: 9217661438655722051, guid: d6e3f5bc43010ef4c9d377a7a861c01b, type: 3}
+  - <Name>k__BackingField: Straight
+    <ID>k__BackingField: 3
+    <Size>k__BackingField: {x: 5, y: 5}
+    <Prefab>k__BackingField: {fileID: 9217661438655722051, guid: d6e3f5bc43010ef4c9d377a7a861c01b, type: 3}
+  - <Name>k__BackingField: TurnShort
+    <ID>k__BackingField: 4
+    <Size>k__BackingField: {x: 2, y: 2}
+    <Prefab>k__BackingField: {fileID: 3384721839282232393, guid: 7c7cb8f3033307c448b7546e4920eb79, type: 3}

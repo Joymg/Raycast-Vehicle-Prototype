@@ -41,7 +41,7 @@ public class Road : MonoBehaviour
 
     public void LockInSocket(RoadSocket socket)
     {
-        Vector3 transformPosition = socket.Transform.position - Sockets[0].Transform.localPosition;
+        Vector3 transformPosition = socket.Transform.position - Sockets[0].Transform.localPosition; 
         if (Sockets[0].Direction != socket.Direction.Opposite())
             RotateRoad(socket.Direction);
         transform.position = transformPosition;
@@ -61,6 +61,7 @@ public class Road : MonoBehaviour
 
     private void OnDrawGizmos()
     {
+        Gizmos.DrawWireSphere(transform.position, 0.3f);
         foreach (var socket in Sockets)
         {
             Gizmos.DrawWireSphere(socket.Transform.position, 0.2f);
